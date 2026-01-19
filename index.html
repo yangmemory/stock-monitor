@@ -1,41 +1,230 @@
-// 使用更稳定的 JSONP 方式或腾讯接口
-function fetchData() {
-    if (stocks.length === 0) {
-        document.getElementById('stockBody').innerHTML = '<tr><td colspan="4" style="text-align:center">暂无自选股，请在上方添加</td></tr>';
-        return;
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>海克斯科技 - 实时贸易终端</title>
+    <style>
+        /* 英雄联盟海克斯风格 UI */
+        :root {
+            --hextech-gold: #c8aa6e;
+            --hextech-blue: #0ac8b9;
+            --bg-dark: #010a13;
+            --panel-bg: rgba(30, 35, 40, 0.9);
+            --up-red: #ff4e50;
+            --down-green: #00ff66;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at center, #051a27 0%, #010a13 100%);
+            color: #f0e6d2;
+            font-family: "Microsoft YaHei", sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .terminal-container {
+            width: 90%;
+            max-width: 900px;
+            margin-top: 50px;
+            border: 2px solid var(--hextech-gold);
+            background: var(--panel-bg);
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(200, 170, 110, 0.2);
+            position: relative;
+        }
+
+        h2 {
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--hextech-gold);
+            border-bottom: 1px solid var(--hextech-gold);
+            padding-bottom: 15px;
+            margin-top: 0;
+        }
+
+        .input-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        input {
+            background: #1e2328;
+            border: 1px solid var(--hextech-gold);
+            color: #f0e6d2;
+            padding: 10px;
+            width: 250px;
+            outline: none;
+        }
+
+        input:focus {
+            box-shadow: 0 0 5px var(--hextech-blue);
+        }
+
+        button {
+            background: #1e2328;
+            border: 1px solid var(--hextech-gold);
+            color: var(--hextech-gold);
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: var(--hextech-gold);
+            color: var(--bg-dark);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            border-bottom: 2px solid #3c3c41;
+            padding: 12px;
+            text-align: left;
+            color: var(--hextech-blue);
+        }
+
+        td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #3c3c41;
+        }
+
+        .up { color: var(--up-red); text-shadow: 0 0 5px rgba(255, 78, 80, 0.3); }
+        .down { color: var(--down-green); text-shadow: 0 0 5px rgba(0, 255, 102, 0.3); }
+
+        .btn-delete {
+            background: transparent;
+            border: 1px solid #ff4e50;
+            color: #ff4e50;
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+
+        .btn-delete:hover {
+            background: #ff4e50;
+            color: white;
+        }
+
+        .status-bar {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="terminal-container">
+    <h2>Hextech Trading Terminal</h2>
+    
+    <div class="input-box">
+        <input type="text" id="stockCode" placeholder="输入代码 (如 sh600519)">
+        <button onclick="addStock()">召 唤</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>资产名称</th>
+                <th>当前能级</th>
+                <th>波动幅值</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody id="stockBody">
+            </tbody>
+    </table>
+
+    <div class="status-bar" id="updateTime">正在同步海克斯核心数据...</div>
+</div>
+
+<script>
+    // 1. 初始化数据 (读取本地缓存)
+    let stocks = JSON.parse(localStorage.getItem('myStocks')) || ['sh000001', 'sz399001'];
+
+    // 2. 添加股票函数
+    function addStock() {
+        const input = document.getElementById('stockCode');
+        const code = input.value.trim().toLowerCase();
+        
+        if (code && !stocks.includes(code)) {
+            stocks.push(code);
+            localStorage.setItem('myStocks', JSON.stringify(stocks));
+            fetchData(); // 立即刷新一次
+            input.value = '';
+        } else {
+            alert("请输入正确的代码或不要重复添加");
+        }
     }
 
-    // 动态创建脚本标签，绕过跨域限制
-    const script = document.createElement('script');
-    script.src = `https://qt.gtimg.cn/q=${stocks.join(',')}`; // 改用腾讯接口，更稳定
-    document.body.appendChild(script);
+    // 3. 删除股票函数
+    function removeStock(index) {
+        stocks.splice(index, 1);
+        localStorage.setItem('myStocks', JSON.stringify(stocks));
+        fetchData();
+    }
 
-    script.onload = function() {
-        let html = '';
-        stocks.forEach((code, index) => {
-            // 腾讯接口返回的数据变量名为 v_代码
-            const varName = "v_" + code;
-            if (window[varName]) {
-                const data = window[varName].split('~');
-                const name = data[1];      // 股票名称
-                const current = parseFloat(data[3]);  // 当前价
-                const lastClose = parseFloat(data[4]); // 昨收
-                const changePrice = data[31]; // 涨跌额
-                const changePercent = data[32]; // 涨跌幅
-                
-                const isUp = parseFloat(changePercent) >= 0;
+    // 4. 获取行情 (核心防跨域逻辑)
+    function fetchData() {
+        if (stocks.length === 0) {
+            document.getElementById('stockBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color:#555;">暂无监测目标</td></tr>';
+            return;
+        }
 
-                html += `
-                    <tr>
-                        <td style="color: #c8aa6e">${name}</td>
-                        <td class="${isUp ? 'up' : 'down'}">${current.toFixed(2)}</td>
-                        <td class="${isUp ? 'up' : 'down'}">${isUp ? '+' : ''}${changePercent}%</td>
-                        <td><button style="background:rgba(255,77,79,0.2); border:1px solid #ff4d4f; color:#ff4d4f; cursor:pointer" onclick="removeStock(${index})">销毁</button></td>
-                    </tr>
-                `;
-            }
-        });
-        document.getElementById('stockBody').innerHTML = html;
-        document.body.removeChild(script); // 清理标签
-    };
-}
+        // 使用 JSONP 方式请求腾讯接口，绕过跨域限制
+        const oldScript = document.getElementById('api-script');
+        if (oldScript) oldScript.remove();
+
+        const script = document.createElement('script');
+        script.id = 'api-script';
+        script.src = `https://qt.gtimg.cn/q=${stocks.join(',')}`;
+        document.body.appendChild(script);
+
+        script.onload = function() {
+            let html = '';
+            stocks.forEach((code, index) => {
+                const varName = "v_" + code;
+                if (window[varName]) {
+                    const data = window[varName].split('~');
+                    const name = data[1];
+                    const price = parseFloat(data[3]);
+                    const changePercent = data[32];
+                    const isUp = parseFloat(changePercent) >= 0;
+
+                    html += `
+                        <tr>
+                            <td style="font-weight:bold">${name} <span style="font-size:10px; color:#555">${code.toUpperCase()}</span></td>
+                            <td class="${isUp ? 'up' : 'down'}">${price.toFixed(2)}</td>
+                            <td class="${isUp ? 'up' : 'down'}">${isUp ? '▲' : '▼'} ${changePercent}%</td>
+                            <td><button class="btn-delete" onclick="removeStock(${index})">注销</button></td>
+                        </tr>
+                    `;
+                }
+            });
+            document.getElementById('stockBody').innerHTML = html;
+            document.getElementById('updateTime').innerText = "最后更新时间: " + new Date().toLocaleTimeString();
+        };
+    }
+
+    // 5. 设置定时任务 (每5秒刷新一次)
+    setInterval(fetchData, 5000);
+    
+    // 首次进入页面加载
+    window.onload = fetchData;
+</script>
+
+</body>
+</html>
