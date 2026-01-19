@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>海克斯科技 - 智能交易終端</title>
+    <title>海克斯科技 - 智能交易终端</title>
     <style>
         :root {
-            --hextech-gold: #c8aa6e;
-            --hextech-blue: #0ac8b9;
+            --hex-gold: #c8aa6e;
+            --hex-blue: #0ac8b9;
+            --hex-border: #785a28;
             --bg-dark: #010a13;
-            --panel-bg: rgba(30, 35, 40, 0.95);
+            --panel-bg: rgba(9, 20, 40, 0.95);
             --up-red: #ff4e50;
             --down-green: #00ff66;
             --ai-purple: #a066ff;
         }
 
         body {
-            background-color: var(--bg-dark);
-            background-image: radial-gradient(circle at center, #051a27 0%, #010a13 100%);
+            background: radial-gradient(circle at center, #051a27 0%, #010a13 100%);
             color: #f0e6d2;
             font-family: "Microsoft YaHei", sans-serif;
             margin: 0;
@@ -30,161 +30,299 @@
         .terminal-container {
             width: 95%;
             max-width: 1200px;
-            margin: 20px 0;
-            border: 2px solid var(--hextech-gold);
+            margin: 30px 0;
+            border: 2px solid var(--hex-border);
             background: var(--panel-bg);
-            padding: 20px;
-            box-shadow: 0 0 30px rgba(10, 200, 185, 0.1);
+            padding: 25px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.9);
+            position: relative;
         }
 
-        .header-main { text-align: center; margin-bottom: 15px; }
-        h2 { margin: 0; letter-spacing: 4px; color: var(--hextech-gold); text-shadow: 0 0 10px rgba(200, 170, 110, 0.5); }
+        .terminal-container::before {
+            content: "";
+            position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--hex-gold), transparent);
+        }
+
+        .header-main { text-align: center; margin-bottom: 20px; }
+        h2 { margin: 0; letter-spacing: 6px; color: var(--hex-gold); text-shadow: 0 0 15px rgba(200, 170, 110, 0.5); text-transform: uppercase; }
         
+        /* 计时区样式保持不变 */
         .timer-zone {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 12px;
-            border: 1px double var(--hextech-gold);
-            background: rgba(0, 0, 0, 0.4);
-            margin-bottom: 20px;
-            border-radius: 4px;
+            display: flex; justify-content: space-around; align-items: center; padding: 15px;
+            border: 1px double var(--hex-border); background: rgba(0, 0, 0, 0.5); margin-bottom: 5px; border-radius: 2px;
         }
 
-        #beijingTime { color: var(--hextech-blue); font-family: "Courier New", monospace; font-size: 18px; font-weight: bold; }
-        #marketCountdown { color: var(--hextech-gold); font-size: 14px; }
+        #beijingTime { color: var(--hex-blue); font-family: "Courier New", monospace; font-size: 20px; font-weight: bold; }
+        #marketCountdown { color: var(--hex-gold); font-size: 14px; letter-spacing: 1px; }
 
+        /* 新增：AI 实时信息滚动条 */
+        .ai-scrolling-info {
+            width: 100%;
+            height: 30px;
+            background: rgba(160, 102, 255, 0.1);
+            border: 1px solid rgba(160, 102, 255, 0.3);
+            margin-bottom: 25px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .ai-scrolling-info::before {
+            content: "AI STRATEGY";
+            background: var(--ai-purple);
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 0 10px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            z-index: 2;
+            box-shadow: 5px 0 10px rgba(0,0,0,0.5);
+        }
+
+        .marquee-container {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .marquee-content {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 30s linear infinite;
+            color: var(--hex-blue);
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* 其它样式保持不变 */
         .controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(200, 170, 110, 0.05);
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(200, 170, 110, 0.03); padding: 18px; margin-bottom: 25px;
+            border: 1px solid rgba(120, 90, 40, 0.2); gap: 10px; flex-wrap: wrap;
         }
 
-        .input-group { display: flex; gap: 8px; }
-        input { background: #1e2328; border: 1px solid var(--hextech-gold); color: #f0e6d2; padding: 8px; outline: none; font-size: 13px; }
-        button { background: #1e2328; border: 1px solid var(--hextech-gold); color: var(--hextech-gold); padding: 8px 15px; cursor: pointer; font-weight: bold; }
-        button:hover { background: var(--hextech-gold); color: #000; }
+        .input-group { display: flex; gap: 10px; }
+        input { background: #1e2328; border: 1px solid var(--hex-border); color: #f0e6d2; padding: 8px 12px; outline: none; font-size: 13px; }
+        
+        button { 
+            background: linear-gradient(to bottom, #1e2328 0%, #111111 100%); border: 1px solid var(--hex-gold); 
+            color: var(--hex-gold); padding: 8px 18px; cursor: pointer; font-weight: bold; text-transform: uppercase;
+        }
+        button:hover { background: var(--hex-gold); color: #010a13; box-shadow: 0 0 12px var(--hex-gold); }
 
-        table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        th { border-bottom: 2px solid var(--hextech-gold); padding: 12px; color: var(--hextech-blue); text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #3c3c41; }
-        tr.stock-row:hover { background: rgba(10, 200, 185, 0.08); cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; }
+        th { border-bottom: 2px solid var(--hex-border); padding: 15px 12px; color: var(--hex-blue); text-align: left; font-size: 13px; }
+        td { padding: 15px 12px; border-bottom: 1px solid rgba(120, 90, 40, 0.1); }
+        tr.stock-row:hover { background: rgba(10, 200, 185, 0.05); cursor: pointer; }
 
-        /* AI 指令標籤 - 更加直接 */
-        .ai-tag { padding: 5px 12px; border-radius: 2px; font-size: 12px; font-weight: bold; text-align: center; display: inline-block; min-width: 60px; }
-        .ai-buy { background: var(--up-red); color: white; box-shadow: 0 0 12px var(--up-red); }
+        .ai-tag { padding: 6px 12px; border-radius: 1px; font-size: 12px; font-weight: bold; display: inline-block; min-width: 140px; text-align: center; }
+        .ai-buy { background: var(--up-red); color: white; }
         .ai-sell { background: var(--down-green); color: black; }
         .ai-hold { border: 1px solid var(--ai-purple); color: var(--ai-purple); }
 
         .up { color: var(--up-red); font-weight: bold; }
         .down { color: var(--down-green); font-weight: bold; }
 
-        .chart-container {
-            display: none;
-            background: #000;
-            text-align: center;
-            padding: 15px;
-            border: 1px dashed var(--hextech-blue);
-            margin-bottom: 20px;
+        .market-view {
+            display: none; margin-bottom: 25px; border: 1px solid var(--hex-blue);
+            background: #000; padding: 15px;
         }
         
-        .status-bar { margin-top: 20px; font-size: 11px; color: #555; text-align: center; }
+        .market-grid { display: grid; grid-template-columns: 1fr 300px; gap: 20px; }
+        .order-book { font-family: "Courier New", monospace; font-size: 13px; border-left: 1px solid #333; padding-left: 15px; }
+        .order-row { display: flex; justify-content: space-between; margin: 4px 0; }
+
+        .status-bar { margin-top: 30px; font-size: 11px; color: #444; text-align: center; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
 <div class="terminal-container">
     <div class="header-main">
-        <h2>海克斯科技 - 智能交易終端</h2>
+        <h2>海克斯科技 - 智能交易终端</h2>
     </div>
 
     <div class="timer-zone">
         <div id="beijingTime">同步中...</div>
-        <div id="marketCountdown">掃描中...</div>
+        <div id="marketCountdown">正在扫描全局市场环境...</div>
+    </div>
+
+    <div class="ai-scrolling-info">
+        <div class="marquee-container">
+            <div class="marquee-content" id="aiMarqueeText">正在初始化海克斯 AI 战略分析引擎... 请注入资产以获取实时建议。</div>
+        </div>
     </div>
     
     <div class="controls">
         <div class="input-group">
-            <input type="text" id="stockCode" placeholder="代碼 (sh600519)">
-            <input type="number" id="buyPrice" style="width:70px" placeholder="成本">
-            <input type="number" id="buyQty" style="width:70px" placeholder="持股">
-            <button onclick="addStock()">注入資產</button>
+            <input type="text" id="stockCode" placeholder="资产代码 (sh600519)">
+            <input type="number" id="buyPrice" style="width:80px" placeholder="持仓成本">
+            <input type="number" id="buyQty" style="width:80px" placeholder="持股数量">
+            <button onclick="addStock()">注入资产</button>
         </div>
         <div class="input-group">
-            <button onclick="exportData()" style="color:var(--hextech-blue); border-color:var(--hextech-blue)">導出資料</button>
-            <button onclick="document.getElementById('importFile').click()">導入資料</button>
+            <button onclick="exportData()">导出数据</button>
+            <button onclick="document.getElementById('importFile').click()">导入数据</button>
             <input type="file" id="importFile" hidden onchange="importData(event)">
         </div>
     </div>
 
-    <div id="chartArea" class="chart-container">
-        <div style="margin-bottom:10px">
-            <button onclick="changeChart('min')">分時圖</button>
-            <button onclick="changeChart('daily')">日K線</button>
-            <button style="color:var(--up-red)" onclick="closeChart()">收起圖表</button>
+    <div id="chartArea" class="market-view">
+        <div style="margin-bottom:15px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <button onclick="changeChart('min')">实时分时</button>
+                <button onclick="changeChart('daily')">日K线图</button>
+            </div>
+            <button style="color:var(--up-red); border-color:var(--up-red)" onclick="closeChart()">收起监控</button>
         </div>
-        <img id="chartImg" src="" style="max-width: 100%;">
+        
+        <div class="market-grid">
+            <div style="text-align: center;">
+                <img id="chartImg" src="" style="max-width: 100%; border: 1px solid #222;">
+            </div>
+            <div class="order-book" id="orderBookBody">
+                <div style="color:var(--hex-blue); border-bottom:1px solid #333; padding-bottom:5px; margin-bottom:10px;">实时盘口 (五档)</div>
+                <div id="sellList"></div>
+                <div style="height:1px; background:#333; margin:10px 0;"></div>
+                <div id="buyList"></div>
+            </div>
+        </div>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th>資產標的</th>
-                <th>最新價格</th>
-                <th>漲跌幅</th>
-                <th>盈虧金額</th>
-                <th>AI 建議</th>
-                <th>指令</th>
+                <th>资产标的</th>
+                <th>最新价格</th>
+                <th>AI 监控低点</th>
+                <th>盈亏金额</th>
+                <th>AI 动作建议</th>
+                <th>管理</th>
             </tr>
         </thead>
         <tbody id="stockBody"></tbody>
     </table>
 
-    <div class="status-bar" id="updateTime">系統穩定運行中...</div>
+    <div class="status-bar" id="updateTime">HEXTECH CORE V3.4 - AI 实时滚动建议已激活</div>
 </div>
 
 <script>
     let stockData = JSON.parse(localStorage.getItem('myHexStocks')) || [];
     let currentChartCode = "";
 
+    // 1. 计时逻辑 (保持不变)
     function updateMarketClock() {
         const now = new Date();
-        document.getElementById('beijingTime').innerText = "北京時間: " + now.toLocaleTimeString('zh-CN', { hour12: false });
-        const hour = now.getHours();
-        const min = now.getMinutes();
-        const totalMin = hour * 60 + min;
-        const day = now.getDay();
+        document.getElementById('beijingTime').innerText = "北京时间: " + now.toLocaleTimeString('zh-CN', { hour12: false });
+        const hour = now.getHours(); const min = now.getMinutes(); const totalMin = hour * 60 + min; const day = now.getDay();
         let statusText = "";
-        if (day === 0 || day === 6) { statusText = "休市中 (周末)"; } 
-        else {
-            if (totalMin < 570) statusText = "距離開盤: " + calcTimeDiff(9, 30);
-            else if (totalMin >= 570 && totalMin < 690) statusText = "交易中 (早盤) | 距午休: " + calcTimeDiff(11, 30);
-            else if (totalMin >= 690 && totalMin < 780) statusText = "午間休市 | 距開盤: " + calcTimeDiff(13, 0);
-            else if (totalMin >= 780 && totalMin < 900) statusText = "交易中 (午盤) | 距收盤: " + calcTimeDiff(15, 0);
-            else statusText = "已收盤";
-        }
+        if (day === 0 || day === 6) statusText = "休市中 (周末)";
+        else if (totalMin < 570) statusText = "距离开盘: " + calcTimeDiff(9, 30);
+        else if (totalMin >= 570 && totalMin < 690) statusText = "交易中 (早盘) | 距午休: " + calcTimeDiff(11, 30);
+        else if (totalMin >= 690 && totalMin < 780) statusText = "午间休市 | 距离开盘: " + calcTimeDiff(13, 0);
+        else if (totalMin >= 780 && totalMin < 900) statusText = "交易中 (午盘) | 距离收盘: " + calcTimeDiff(15, 0);
+        else statusText = "已收盘";
         document.getElementById('marketCountdown').innerText = statusText;
     }
 
     function calcTimeDiff(tH, tM) {
         const now = new Date(); const target = new Date(); target.setHours(tH, tM, 0);
-        let diff = Math.floor((target - now) / 1000);
+        let diff = Math.floor((target - now) / 1000); if (diff < 0) return "00:00:00";
         const h = Math.floor(diff / 3600); const m = Math.floor((diff % 3600) / 60); const s = diff % 60;
         return `${h > 0 ? h + ":" : ""}${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
     }
 
-    // AI 決策建議 - 簡化指令
-    function getAISuggestion(change) {
+    // 2. AI 逻辑：计算建议价格与生成滚动文字
+    function calculateAIBuyPrice(d) {
+        const high = parseFloat(d[33]); const low = parseFloat(d[34]); const open = parseFloat(d[5]); const current = parseFloat(d[3]);
+        if (current > open) return (low + (high - low) * 0.382).toFixed(2);
+        return (low * 1.005).toFixed(2);
+    }
+
+    function updateAIRollingInfo(allData) {
+        let advisoryText = " [海克斯系统提示] ";
+        allData.forEach(d_str => {
+            const d = d_str.split('~');
+            const name = d[1];
+            const current = d[3];
+            const buyPrice = calculateAIBuyPrice(d);
+            const change = d[32];
+            
+            if (parseFloat(change) >= 2.0) {
+                advisoryText += `✦ ${name}: 处于上涨势头，AI 建议回调至 ${buyPrice} 附近买入。 `;
+            } else if (parseFloat(change) <= -2.0) {
+                advisoryText += `✦ ${name}: 跌幅较大，建议在反抽至 ${(current * 1.015).toFixed(2)} 附近执行减仓策略。 `;
+            } else {
+                advisoryText += `✦ ${name}: 走势平稳，建议持币观望，支撑位参考 ${buyPrice}。 `;
+            }
+        });
+        if (allData.length > 0) document.getElementById('aiMarqueeText').innerText = advisoryText;
+    }
+
+    function fetchData() {
+        if (stockData.length === 0) {
+            document.getElementById('stockBody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:#444;padding:30px">等待资产注入...</td></tr>';
+            return;
+        }
+        const codes = stockData.map(s => s.code);
+        const script = document.createElement('script');
+        script.src = `https://qt.gtimg.cn/q=${codes.join(',')}`;
+        document.body.appendChild(script);
+        script.onload = function() {
+            let html = '';
+            let allD = [];
+            stockData.forEach((item) => {
+                const varName = "v_" + item.code;
+                if (window[varName]) {
+                    allD.push(window[varName]);
+                    const d = window[varName].split('~');
+                    const price = parseFloat(d[3]); const aiBuy = calculateAIBuyPrice(d); const change = d[32]; const isUp = parseFloat(change) >= 0;
+                    let pnl = '--';
+                    if (item.cost > 0 && item.qty > 0) {
+                        const amt = (price - item.cost) * item.qty;
+                        pnl = `<span class="${amt >= 0 ? 'up' : 'down'}">${amt >= 0 ? '+' : ''}${amt.toFixed(2)}</span>`;
+                    }
+                    html += `<tr class="stock-row" onclick="showChart('${item.code}')">
+                        <td><span style="color:var(--hex-gold)">✦</span> ${d[1]}<br><small style="color:#555">${item.code.toUpperCase()}</small></td>
+                        <td class="${isUp ? 'up' : 'down'} font-bold">${price.toFixed(2)}</td>
+                        <td style="color:var(--hex-blue)">${aiBuy}</td>
+                        <td>${pnl}</td>
+                        <td>${getAIDynamicAction(change, d)}</td>
+                        <td><button onclick="removeStock(event, '${item.code}')" style="font-size:10px">移除</button></td>
+                    </tr>`;
+                }
+            });
+            document.getElementById('stockBody').innerHTML = html;
+            updateAIRollingInfo(allD);
+            if(currentChartCode) updateOrderBook(currentChartCode);
+        };
+    }
+
+    function getAIDynamicAction(change, d) {
         const num = parseFloat(change);
-        if (num >= 2.0) return '<span class="ai-tag ai-buy">建議買入</span>';
-        if (num <= -2.0) return '<span class="ai-tag ai-sell">建議賣出</span>';
-        return '<span class="ai-tag ai-hold">觀望</span>';
+        const buyPrice = calculateAIBuyPrice(d);
+        if (num >= 2.0) return `<span class="ai-tag ai-buy">建议买入: ${buyPrice}</span>`;
+        if (num <= -2.0) return `<span class="ai-tag ai-sell">建议卖出: ${(d[3]*0.98).toFixed(2)}</span>`;
+        return '<span class="ai-tag ai-hold">持币观望</span>';
+    }
+
+    // 其它逻辑保持不变
+    function updateOrderBook(code) {
+        const d = window["v_" + code].split('~');
+        let sellHtml = ''; for(let i=5; i>=1; i--) sellHtml += `<div class="order-row"><span>卖${i}</span><span class="${parseFloat(d[19+(i-1)*2])>=d[4]?'up':'down'}">${parseFloat(d[19+(i-1)*2]).toFixed(2)}</span><span style="color:var(--hex-gold)">${Math.floor(d[20+(i-1)*2]/100)}</span></div>`;
+        document.getElementById('sellList').innerHTML = sellHtml;
+        let buyHtml = ''; for(let i=1; i<=5; i++) buyHtml += `<div class="order-row"><span>买${i}</span><span class="${parseFloat(d[9+(i-1)*2])>=d[4]?'up':'down'}">${parseFloat(d[9+(i-1)*2]).toFixed(2)}</span><span style="color:var(--hex-gold)">${Math.floor(d[10+(i-1)*2]/100)}</span></div>`;
+        document.getElementById('buyList').innerHTML = buyHtml;
     }
 
     function addStock() {
@@ -192,61 +330,20 @@
         const cost = parseFloat(document.getElementById('buyPrice').value) || 0;
         const qty = parseFloat(document.getElementById('buyQty').value) || 0;
         if (code) {
-            const index = stockData.findIndex(s => s.code === code);
-            if (index > -1) stockData[index] = { code, cost, qty };
-            else stockData.push({ code, cost, qty });
+            stockData.push({ code, cost, qty });
             localStorage.setItem('myHexStocks', JSON.stringify(stockData));
             fetchData();
         }
     }
-
-    function fetchData() {
-        if (stockData.length === 0) {
-            document.getElementById('stockBody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:#444">等待資產注入...</td></tr>';
-            return;
-        }
-        const codes = stockData.map(s => s.code);
-        const oldScript = document.getElementById('api-script');
-        if (oldScript) oldScript.remove();
-        const script = document.createElement('script');
-        script.id = 'api-script';
-        script.src = `https://qt.gtimg.cn/q=${codes.join(',')}`;
-        document.body.appendChild(script);
-        script.onload = function() {
-            let html = '';
-            stockData.forEach((item, index) => {
-                const varName = "v_" + item.code;
-                if (window[varName]) {
-                    const d = window[varName].split('~');
-                    const price = parseFloat(d[3]); const change = d[32]; const isUp = parseFloat(change) >= 0;
-                    let pnl = '--';
-                    if (item.cost > 0 && item.qty > 0) {
-                        const amt = (price - item.cost) * item.qty;
-                        pnl = `<span class="${amt >= 0 ? 'up' : 'down'}">${amt.toFixed(2)}</span>`;
-                    }
-                    html += `<tr class="stock-row" onclick="showChart('${item.code}')">
-                        <td><span style="color:var(--hextech-gold)">✦</span> ${d[1]}<br><small style="color:#555">${item.code.toUpperCase()}</small></td>
-                        <td class="${isUp ? 'up' : 'down'}">${price.toFixed(2)}</td>
-                        <td class="${isUp ? 'up' : 'down'}">${isUp ? '+' : ''}${change}%</td>
-                        <td>${pnl}</td>
-                        <td>${getAISuggestion(change)}</td>
-                        <td><button onclick="removeStock(event, ${index})" style="color:#ff4e50; border-color:#ff4e50; font-size:10px">移除</button></td>
-                    </tr>`;
-                }
-            });
-            document.getElementById('stockBody').innerHTML = html;
-        };
-    }
-
-    function removeStock(e, i) { e.stopPropagation(); if(confirm("確定移除？")) { stockData.splice(i, 1); localStorage.setItem('myHexStocks', JSON.stringify(stockData)); fetchData(); } }
-    function showChart(code) { currentChartCode = code; document.getElementById('chartArea').style.display = 'block'; changeChart('min'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    function removeStock(e, code) { e.stopPropagation(); stockData = stockData.filter(s => s.code !== code); localStorage.setItem('myHexStocks', JSON.stringify(stockData)); fetchData(); }
+    function showChart(code) { currentChartCode = code; document.getElementById('chartArea').style.display = 'block'; changeChart('min'); updateOrderBook(code); }
     function changeChart(type) { document.getElementById('chartImg').src = `https://image.sinajs.cn/newchart/${type}/n/${currentChartCode}.gif?t=${Date.now()}`; }
-    function closeChart() { document.getElementById('chartArea').style.display = 'none'; }
-    function exportData() { const blob = new Blob([JSON.stringify(stockData)], {type:"application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download='資產備份.json'; a.click(); }
+    function closeChart() { currentChartCode = ""; document.getElementById('chartArea').style.display = 'none'; }
+    function exportData() { const blob = new Blob([JSON.stringify(stockData)], {type:"application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download='HEXTECH_AI.json'; a.click(); }
     function importData(e) { const reader = new FileReader(); reader.onload = (f) => { stockData = JSON.parse(f.target.result); localStorage.setItem('myHexStocks', JSON.stringify(stockData)); fetchData(); }; reader.readAsText(e.target.files[0]); }
 
     setInterval(updateMarketClock, 1000);
-    setInterval(fetchData, 5000);
+    setInterval(fetchData, 3000);
     window.onload = () => { updateMarketClock(); fetchData(); };
 </script>
 
