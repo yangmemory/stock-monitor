@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>海克斯科技 - 智能交易终端</title>
+    <title>海克斯科技 - 智能交易終端</title>
     <style>
         :root {
             --hex-gold: #c8aa6e;
@@ -38,16 +38,9 @@
             background: linear-gradient(90deg, transparent, var(--hex-gold), transparent);
         }
 
-        .header-main { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 20px; 
-        }
-        
+        .header-main { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         h2 { margin: 0; letter-spacing: 6px; color: var(--hex-gold); text-shadow: 0 0 15px rgba(200, 170, 110, 0.5); text-transform: uppercase; flex: 1; text-align: center; padding-left: 80px; }
 
-        /* 语言切换按钮样式 */
         .lang-switch { display: flex; gap: 5px; }
         .lang-btn { font-size: 10px; padding: 4px 8px; border: 1px solid var(--hex-border); color: var(--hex-gold); background: transparent; cursor: pointer; }
         .lang-btn.active { background: var(--hex-gold); color: #000; }
@@ -58,7 +51,7 @@
         }
 
         #beijingTime { color: var(--hex-blue); font-family: "Courier New", monospace; font-size: 20px; font-weight: bold; }
-        #marketCountdown { color: var(--hex-gold); font-size: 14px; letter-spacing: 1px; }
+        #marketCountdown { color: var(--hex-gold); font-size: 15px; letter-spacing: 1px; font-weight: bold; }
 
         .ai-info-panel {
             width: 100%; min-height: 75px; background: rgba(160, 102, 255, 0.08);
@@ -96,11 +89,9 @@
         .ai-hold { border: 1px solid var(--ai-purple); color: var(--ai-purple); }
 
         .chart-nav { display: flex; gap: 8px; margin-bottom: 15px; }
-        .nav-btn { padding: 6px 14px; font-size: 11px; min-width: 70px; }
+        .nav-btn { padding: 6px 14px; font-size: 11px; min-width: 70px; border-color: rgba(10, 200, 185, 0.3); }
         .nav-btn.active { background: var(--hex-blue); color: #010a13; border-color: var(--hex-blue); }
 
-        @keyframes alert-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); box-shadow: 0 0 15px currentColor; } }
-        .flash-alert { animation: alert-pulse 1s infinite; }
         .up { color: var(--up-red); font-weight: bold; }
         .down { color: var(--down-green); font-weight: bold; }
 
@@ -114,7 +105,7 @@
 
 <div class="terminal-container">
     <div class="header-main">
-        <h2 id="ui-title">海克斯科技 - 智能交易终端</h2>
+        <h2 id="ui-title">海克斯科技 - 智能交易終端</h2>
         <div class="lang-switch">
             <button class="lang-btn active" onclick="setLanguage('zh-CN')">简</button>
             <button class="lang-btn" onclick="setLanguage('zh-HK')">繁</button>
@@ -123,11 +114,11 @@
 
     <div class="timer-zone">
         <div id="beijingTime">同步中...</div>
-        <div id="marketCountdown" id="ui-market-scan">正在扫描全局市场环境...</div>
+        <div id="marketCountdown">正在掃描全局市場環境...</div>
     </div>
 
-    <div class="ai-info-panel" id="ai-panel" data-label="核心战略分析">
-        <div id="aiStrategyBox">请选择资产，载入海克斯深度战略分析...</div>
+    <div class="ai-info-panel" id="ai-panel" data-label="核心戰略分析">
+        <div id="aiStrategyBox">請選擇資產，載入海克斯深度戰略分析...</div>
     </div>
     
     <div class="controls">
@@ -147,11 +138,11 @@
     <div id="chartArea" class="market-view">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
             <div class="chart-nav" id="chartNav">
-                <button class="lol-btn nav-btn active" data-type="min" onclick="changeChart('min', this)">分时</button>
-                <button class="lol-btn nav-btn" data-type="five" onclick="changeChart('five', this)">五日</button>
-                <button class="lol-btn nav-btn" data-type="daily" onclick="changeChart('daily', this)">日K</button>
-                <button class="lol-btn nav-btn" data-type="weekly" onclick="changeChart('weekly', this)">周K</button>
-                <button class="lol-btn nav-btn" data-type="monthly" onclick="changeChart('monthly', this)">月K</button>
+                <button class="lol-btn nav-btn active" onclick="changeChart('min', this)">分时</button>
+                <button class="lol-btn nav-btn" onclick="changeChart('five', this)">五日</button>
+                <button class="lol-btn nav-btn" onclick="changeChart('daily', this)">日K</button>
+                <button class="lol-btn nav-btn" onclick="changeChart('weekly', this)">周K</button>
+                <button class="lol-btn nav-btn" onclick="changeChart('monthly', this)">月K</button>
             </div>
             <button class="lol-btn btn-remove" style="padding: 6px 15px; font-size: 11px;" onclick="closeChart()" id="ui-close-monitor">关闭监控</button>
         </div>
@@ -190,7 +181,6 @@
     const i18n = {
         'zh-CN': {
             title: "海克斯科技 - 智能交易终端",
-            scan: "正在扫描全局市场环境...",
             panelLabel: "核心战略分析",
             panelDefault: "请选择资产，载入海克斯深度战略分析...",
             inputCode: "代码 (如 sh600519)",
@@ -208,23 +198,18 @@
             thPnl: "盈亏金额",
             thAction: "AI 动作建议",
             thManage: "管理终端",
-            trendUp: "多头向上",
-            trendDown: "空头承压",
-            buyPoint: "建议买入位",
-            sellPoint: "建议卖出位",
-            rangePos: "区间位置",
-            sellRef: "止盈参考",
-            buyRef: "补仓参考",
-            hold: "持币观望",
-            edit: "修改",
-            remove: "移除",
-            confirmRemove: "确定移除该资产监控？",
-            buySug: "建议买入",
-            sellSug: "建议卖出"
+            marketClosed: "已收盘 (休息中)",
+            marketWeekend: "休市中 (周末)",
+            distOpen: "距离开盤",
+            distMid: "距午休",
+            distNoon: "距午盤",
+            distClose: "距收盤",
+            timeMorning: "交易中 (早盤)",
+            timeAfternoon: "交易中 (午盤)",
+            timeNoonBreak: "午間休市"
         },
         'zh-HK': {
             title: "海克斯科技 - 智能交易終端",
-            scan: "正在掃描全局市場環境...",
             panelLabel: "核心戰略分析",
             panelDefault: "請選擇資產，載入海克斯深度戰略分析...",
             inputCode: "代碼 (如 sh600519)",
@@ -242,21 +227,50 @@
             thPnl: "盈虧金額",
             thAction: "AI 動作建議",
             thManage: "管理終端",
-            trendUp: "多頭向上",
-            trendDown: "空頭承壓",
-            buyPoint: "建議買入位",
-            sellPoint: "建議賣出位",
-            rangePos: "空間定位",
-            sellRef: "止盈參考",
-            buyRef: "補倉參考",
-            hold: "持幣觀望",
-            edit: "修改",
-            remove: "移除",
-            confirmRemove: "確定移除該資產監控？",
-            buySug: "建議買入",
-            sellSug: "建議賣出"
+            marketClosed: "已收盤 (休息中)",
+            marketWeekend: "休市中 (週末)",
+            distOpen: "距離開盤",
+            distMid: "距午休",
+            distNoon: "距午盤",
+            distClose: "距收盤",
+            timeMorning: "交易中 (早盤)",
+            timeAfternoon: "交易中 (午盤)",
+            timeNoonBreak: "午間休市"
         }
     };
+
+    function updateMarketClock() {
+        const now = new Date();
+        const t = i18n[currentLang];
+        document.getElementById('beijingTime').innerText = (currentLang === 'zh-CN' ? "北京时间: " : "北京時間: ") + now.toLocaleTimeString('zh-CN', { hour12: false });
+        
+        const h = now.getHours(), m = now.getMinutes(), timeVal = h * 60 + m, day = now.getDay();
+        let status = "";
+
+        if (day === 0 || day === 6) {
+            status = t.marketWeekend;
+        } else if (timeVal < 570) {
+            status = `${t.distOpen}: ${calcTimeDiff(9, 30)}`;
+        } else if (timeVal >= 570 && timeVal < 690) {
+            status = `${t.timeMorning} | ${t.distMid}: ${calcTimeDiff(11, 30)}`;
+        } else if (timeVal >= 690 && timeVal < 780) {
+            status = `${t.timeNoonBreak} | ${t.distNoon}: ${calcTimeDiff(13, 0)}`;
+        } else if (timeVal >= 780 && timeVal < 900) {
+            status = `${t.timeAfternoon} | ${t.distClose}: ${calcTimeDiff(15, 0)}`;
+        } else {
+            status = t.marketClosed;
+        }
+        document.getElementById('marketCountdown').innerText = status;
+    }
+
+    function calcTimeDiff(tH, tM) {
+        const now = new Date(), target = new Date();
+        target.setHours(tH, tM, 0);
+        let diff = Math.floor((target - now) / 1000);
+        if (diff < 0) return "00:00:00";
+        const h = Math.floor(diff / 3600), m = Math.floor((diff % 3600) / 60), s = diff % 60;
+        return `${h > 0 ? h + ":" : ""}${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+    }
 
     function setLanguage(lang) {
         currentLang = lang;
@@ -273,7 +287,7 @@
         document.getElementById('stockCode').placeholder = t.inputCode;
         document.getElementById('buyPrice').placeholder = t.inputCost;
         document.getElementById('buyQty').placeholder = t.inputQty;
-        document.getElementById('submitBtn').innerText = (document.getElementById('submitBtn').innerText === i18n['zh-CN'].btnConfirm || document.getElementById('submitBtn').innerText === i18n['zh-HK'].btnConfirm) ? t.btnConfirm : t.btnSubmit;
+        document.getElementById('submitBtn').innerText = (document.getElementById('submitBtn').innerText.includes("确认") || document.getElementById('submitBtn').innerText.includes("確認")) ? t.btnConfirm : t.btnSubmit;
         document.getElementById('ui-export').innerText = t.btnExport;
         document.getElementById('ui-import').innerText = t.btnImport;
         document.getElementById('ui-close-monitor').innerText = t.btnClose;
@@ -283,43 +297,34 @@
         ths[0].innerText = t.thTarget; ths[1].innerText = t.thPrice; ths[2].innerText = t.thCost;
         ths[3].innerText = t.thPnl; ths[4].innerText = t.thAction; ths[5].innerText = t.thManage;
 
-        const navs = document.querySelectorAll('.nav-btn');
-        const navMap = currentLang === 'zh-CN' ? ['分时','五日','日K','周K','月K'] : ['分時','五日','日K','周K','月K'];
-        navs.forEach((n, i) => n.innerText = navMap[i]);
-    }
-
-    function updateMarketClock() {
-        const now = new Date();
-        document.getElementById('beijingTime').innerText = (currentLang === 'zh-CN' ? "北京时间: " : "北京時間: ") + now.toLocaleTimeString('zh-CN', { hour12: false });
-        // ... (倒计时逻辑逻辑简化)
+        const navBtns = document.querySelectorAll('.nav-btn');
+        const labels = currentLang === 'zh-CN' ? ['分时','五日','日K','周K','月K'] : ['分時','五日','日K','周K','月K'];
+        navBtns.forEach((btn, i) => btn.innerText = labels[i]);
     }
 
     function updateAIInfoBox(code) {
         const box = document.getElementById('aiStrategyBox');
-        const t = i18n[currentLang];
-        if (!code) { box.innerHTML = `<div>${t.panelDefault}</div>`; return; }
+        if (!code) { box.innerHTML = `<div>${i18n[currentLang].panelDefault}</div>`; return; }
         const d = window["v_" + code].split('~');
         const name = d[1], current = parseFloat(d[3]), open = parseFloat(d[5]), low = parseFloat(d[34]), high = parseFloat(d[33]);
-        let trend = current > open ? t.trendUp : t.trendDown;
-        let buyPoint = (low + (high - low) * 0.382).toFixed(2);
-        let sellPoint = (current * 1.05).toFixed(2);
-        let rangePos = ((current - low) / (high - low) * 100).toFixed(1);
+        const buyPoint = (low + (high - low) * 0.382).toFixed(2);
+        const sellPoint = (current * 1.05).toFixed(2);
+        const rangePos = ((current - low) / (high - low) * 100).toFixed(1);
 
         box.innerHTML = `
             <div style="display:flex; justify-content:space-between; width:100%;">
-                <span>${currentLang==='zh-CN'?'追踪':'追蹤'}: <b class="ai-val">${name}</b> | ${currentLang==='zh-CN'?'趋势':'趨勢'}: <b style="color:${current>open?'var(--up-red)':'var(--down-green)'}">${trend}</b></span>
+                <span>${currentLang==='zh-CN'?'追踪':'追蹤'}: <b class="ai-val">${name}</b> | ${currentLang==='zh-CN'?'趋势':'趨勢'}: <b style="color:${current>open?'var(--up-red)':'var(--down-green)'}">${current>open?(currentLang==='zh-CN'?'多头向上':'多頭向上'):(currentLang==='zh-CN'?'空头承压':'空頭承壓')}</b></span>
                 <span>${currentLang==='zh-CN'?'今日高点':'今日高點'}: <b class="ai-val">${high.toFixed(2)}</b> | ${currentLang==='zh-CN'?'今日低点':'今日低點'}: <b class="ai-val">${low.toFixed(2)}</b></span>
             </div>
             <div style="margin-top:5px; display:flex; gap:25px;">
-                <span><span class="ai-label">${t.buyPoint}:</span><b style="color:var(--down-green)">${buyPoint}</b></span>
-                <span><span class="ai-label">${t.sellPoint}:</span><b style="color:var(--up-red)">${sellPoint}</b></span>
-                <span><span class="ai-label">${t.rangePos}:</span><b>${rangePos}%</b></span>
+                <span><span class="ai-label">${currentLang==='zh-CN'?'建议买入位':'建議買入位'}:</span><b style="color:var(--down-green)">${buyPoint}</b></span>
+                <span><span class="ai-label">${currentLang==='zh-CN'?'建议卖出位':'建議賣出位'}:</span><b style="color:var(--up-red)">${sellPoint}</b></span>
+                <span><span class="ai-label">${currentLang==='zh-CN'?'区间位置':'空間定位'}:</span><b>${rangePos}%</b></span>
             </div>`;
     }
 
     function fetchData() {
-        const t = i18n[currentLang];
-        if (stockData.length === 0) { document.getElementById('stockBody').innerHTML = `<tr><td colspan="6" style="text-align:center;color:#444;padding:40px">${currentLang==='zh-CN'?'等待注入数据...':'等待注入數據...'}</td></tr>`; return; }
+        if (stockData.length === 0) return;
         const codes = stockData.map(s => s.code);
         const script = document.createElement('script');
         script.src = `https://qt.gtimg.cn/q=${codes.join(',')}`;
@@ -343,8 +348,8 @@
                         <td>${pnl}</td>
                         <td>${getAIDynamicAction(d, item)}</td>
                         <td style="text-align: right; padding-right: 20px;">
-                            <button class="lol-btn action-btn-large btn-edit" onclick="editStock(event, ${index})">${t.edit}</button>
-                            <button class="lol-btn action-btn-large btn-remove" onclick="removeStock(event, ${index})">${t.remove}</button>
+                            <button class="lol-btn action-btn-large btn-edit" onclick="editStock(event, ${index})">${currentLang==='zh-CN'?'修改':'修改'}</button>
+                            <button class="lol-btn action-btn-large btn-remove" onclick="removeStock(event, ${index})">${currentLang==='zh-CN'?'移除':'移除'}</button>
                         </td>
                     </tr>`;
                 }
@@ -355,21 +360,20 @@
     }
 
     function getAIDynamicAction(d, item) {
-        const t = i18n[currentLang];
         const current = parseFloat(d[3]), cost = parseFloat(item.cost), change = parseFloat(d[32]), low = parseFloat(d[34]);
         const aiBuyPoint = (low + (parseFloat(d[33]) - low) * 0.382).toFixed(2);
-        let label = "", cssClass = "ai-hold", isAlert = false;
+        let label = "", cssClass = "ai-hold";
         if (cost > 0) {
             const pRate = (current - cost) / cost;
-            if (pRate > 0.05) { label = `${t.sellRef}: ${(current*0.995).toFixed(2)}`; cssClass = "ai-sell"; isAlert = true; }
-            else if (pRate < -0.05 && current > low) { label = `${t.buyRef}: ${(current*1.005).toFixed(2)}`; cssClass = "ai-buy"; isAlert = true; }
+            if (pRate > 0.05) { label = `${currentLang==='zh-CN'?'止盈参考':'止盈參考'}: ${(current*0.995).toFixed(2)}`; cssClass = "ai-sell"; }
+            else if (pRate < -0.05 && current > low) { label = `${currentLang==='zh-CN'?'补仓参考':'補倉參考'}: ${(current*1.005).toFixed(2)}`; cssClass = "ai-buy"; }
         }
         if (!label) {
-            if (change >= 2.0) { label = `${t.buySug}: ${aiBuyPoint}`; cssClass = "ai-buy"; }
-            else if (change <= -2.0) { label = `${t.sellSug}: ${(current*0.985).toFixed(2)}`; cssClass = "ai-sell"; }
-            else { label = t.hold; cssClass = "ai-hold"; }
+            if (change >= 2.0) label = `${currentLang==='zh-CN'?'建议买入':'建議買入'}: ${aiBuyPoint}`, cssClass = "ai-buy";
+            else if (change <= -2.0) label = `${currentLang==='zh-CN'?'建议卖出':'建議賣出'}: ${(current*0.985).toFixed(2)}`, cssClass = "ai-sell";
+            else label = (currentLang==='zh-CN'?'持币观望':'持幣觀望'), cssClass = "ai-hold";
         }
-        return `<span class="ai-tag ${cssClass} ${isAlert ? 'flash-alert' : ''}">${label}</span>`;
+        return `<span class="ai-tag ${cssClass}">${label}</span>`;
     }
 
     function addStock() {
@@ -380,7 +384,7 @@
         saveAndRefresh();
     }
     function editStock(e, i) { e.stopPropagation(); const item = stockData[i]; document.getElementById('stockCode').value = item.code; document.getElementById('buyPrice').value = item.cost; document.getElementById('buyQty').value = item.qty; document.getElementById('submitBtn').innerText = i18n[currentLang].btnConfirm; window.scrollTo({ top: 0, behavior: 'smooth' }); }
-    function removeStock(e, i) { e.stopPropagation(); if(confirm(i18n[currentLang].confirmRemove)) { stockData.splice(i, 1); saveAndRefresh(); } }
+    function removeStock(e, i) { e.stopPropagation(); if(confirm(currentLang==='zh-CN'?'确定移除？':'確定移除？')) { stockData.splice(i, 1); saveAndRefresh(); } }
     function saveAndRefresh() { localStorage.setItem('myHexStocks', JSON.stringify(stockData)); document.getElementById('submitBtn').innerText = i18n[currentLang].btnSubmit; fetchData(); }
     function showChart(code) { currentChartCode = code; document.getElementById('chartArea').style.display = 'block'; changeChart(currentChartType, document.querySelector('.nav-btn.active')); }
     function changeChart(type, btn) {
