@@ -1,110 +1,41 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <title>极简盯盘 - 我的自选股</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #121212; color: #e0e0e0; margin: 20px; }
-        .container { max-width: 800px; margin: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #1e1e1e; border-radius: 8px; overflow: hidden; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #333; }
-        th { background: #2d2d2d; }
-        .up { color: #ff4d4f; }    /* 红涨 */
-        .down { color: #52c41a; }  /* 绿跌 */
-        .input-group { margin-bottom: 15px; display: flex; gap: 10px; }
-        input { padding: 8px; border-radius: 4px; border: 1px solid #444; background: #252525; color: white; }
-        button { padding: 8px 16px; border: none; border-radius: 4px; background: #1890ff; color: white; cursor: pointer; }
-        button:hover { background: #40a9ff; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2>📈 实时盯盘 (5秒刷新)</h2>
-        <div class="input-group">
-            <input type="text" id="stockCode" placeholder="输入代码，如 sh600519">
-            <button onclick="addStock()">添加股票</button>
-            <small style="color: #888; align-self: center;">格式: sh600519(沪), sz000001(深)</small>
-        </div>
-        
-        <table id="stockTable">
-            <thead>
-                <tr>
-                    <th>名称</th>
-                    <th>现价</th>
-                    <th>涨跌幅</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody id="stockBody">
-                </tbody>
-        </table>
-    </div>
+// 使用更稳定的 JSONP 方式或腾讯接口
+function fetchData() {
+    if (stocks.length === 0) {
+        document.getElementById('stockBody').innerHTML = '<tr><td colspan="4" style="text-align:center">暂无自选股，请在上方添加</td></tr>';
+        return;
+    }
 
-    <script>
-        // 初始化自选股列表 (存入 localStorage)
-        let stocks = JSON.parse(localStorage.getItem('myStocks')) || ['sh000001', 'sz399001'];
+    // 动态创建脚本标签，绕过跨域限制
+    const script = document.createElement('script');
+    script.src = `https://qt.gtimg.cn/q=${stocks.join(',')}`; // 改用腾讯接口，更稳定
+    document.body.appendChild(script);
 
-        function addStock() {
-            const code = document.getElementById('stockCode').value.trim().toLowerCase();
-            if (code && !stocks.includes(code)) {
-                stocks.push(code);
-                saveAndRefresh();
-                document.getElementById('stockCode').value = '';
+    script.onload = function() {
+        let html = '';
+        stocks.forEach((code, index) => {
+            // 腾讯接口返回的数据变量名为 v_代码
+            const varName = "v_" + code;
+            if (window[varName]) {
+                const data = window[varName].split('~');
+                const name = data[1];      // 股票名称
+                const current = parseFloat(data[3]);  // 当前价
+                const lastClose = parseFloat(data[4]); // 昨收
+                const changePrice = data[31]; // 涨跌额
+                const changePercent = data[32]; // 涨跌幅
+                
+                const isUp = parseFloat(changePercent) >= 0;
+
+                html += `
+                    <tr>
+                        <td style="color: #c8aa6e">${name}</td>
+                        <td class="${isUp ? 'up' : 'down'}">${current.toFixed(2)}</td>
+                        <td class="${isUp ? 'up' : 'down'}">${isUp ? '+' : ''}${changePercent}%</td>
+                        <td><button style="background:rgba(255,77,79,0.2); border:1px solid #ff4d4f; color:#ff4d4f; cursor:pointer" onclick="removeStock(${index})">销毁</button></td>
+                    </tr>
+                `;
             }
-        }
-
-        function removeStock(index) {
-            stocks.splice(index, 1);
-            saveAndRefresh();
-        }
-
-        function saveAndRefresh() {
-            localStorage.setItem('myStocks', JSON.stringify(stocks));
-            fetchData();
-        }
-
-        async function fetchData() {
-            if (stocks.length === 0) {
-                document.getElementById('stockBody').innerHTML = '<tr><td colspan="4">暂无自选股</td></tr>';
-                return;
-            }
-
-            // 使用新浪免费接口
-            const url = `https://hq.sinajs.cn/list=${stocks.join(',')}`;
-            
-            try {
-                const response = await fetch(url);
-                const text = await response.text();
-                const lines = text.split('\n');
-                let html = '';
-
-                lines.forEach((line, index) => {
-                    if (!line.includes('"')) return;
-                    const data = line.split('"')[1].split(',');
-                    const name = data[0]; // 名称
-                    const current = parseFloat(data[3]); // 当前价
-                    const yesterday = parseFloat(data[2]); // 昨收价
-                    const change = (((current - yesterday) / yesterday) * 100).toFixed(2);
-                    const isUp = change >= 0;
-
-                    html += `
-                        <tr>
-                            <td>${name} (${stocks[index].toUpperCase()})</td>
-                            <td class="${isUp ? 'up' : 'down'}">${current.toFixed(2)}</td>
-                            <td class="${isUp ? 'up' : 'down'}">${isUp ? '+' : ''}${change}%</td>
-                            <td><button style="background:#ff4d4f" onclick="removeStock(${index})">删除</button></td>
-                        </tr>
-                    `;
-                });
-                document.getElementById('stockBody').innerHTML = html;
-            } catch (err) {
-                console.error("获取行情失败，请检查网络或跨域设置", err);
-            }
-        }
-
-        // 定时刷新
-        setInterval(fetchData, 5000);
-        fetchData();
-    </script>
-</body>
-</html>
+        });
+        document.getElementById('stockBody').innerHTML = html;
+        document.body.removeChild(script); // 清理标签
+    };
+}
